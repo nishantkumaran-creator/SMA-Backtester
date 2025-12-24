@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np  
 import seaborn as sns
 
-def analyze_stock(ticker):
+def analyze_stock(ticker, short_window=50, long_window=200):
     ticker = ticker.upper().strip()
     start_date = "2020-01-01"
     end_date = "2024-01-01"
@@ -17,11 +17,11 @@ def analyze_stock(ticker):
         return
 
     # 1. Calculate Moving Averages
-    data["SMA_50"] = data['Close'].rolling(window=50).mean()
-    data["SMA_200"] = data['Close'].rolling(window=200).mean()
+    data["SMA_Short"] = data['Close'].rolling(window=short_window).mean()
+    data["SMA_Long"] = data['Close'].rolling(window=long_window).mean()
 
     # 2. Generate Signals
-    data['Signal'] = np.where(data['SMA_50'] > data['SMA_200'], 1, 0)
+    data['Signal'] = np.where(data['SMA_Short'] > data['SMA_Long'], 1, 0)
 
     # 3. Calculate Returns
     data['Stock_Return'] = data['Close'].pct_change()
@@ -31,19 +31,24 @@ def analyze_stock(ticker):
     data['Cumulative_Market'] = (1 + data['Stock_Return']).cumprod()
     data['Cumulative_Strategy'] = (1 + data['Strategy_Return']).cumprod()
 
+    if short_window == 50 and long_window == 200:
+        strategy_name = "Golden Cross"
+    else:
+        strategy_name = f"SMA {short_window}/{long_window} Crossover"
+
     # --- PLOTTING ---
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
 
     ax1.plot(data['Close'], label=f'{ticker} Price', alpha=0.5, color='gray')
-    ax1.plot(data["SMA_50"], label='SMA 50', color='orange')
-    ax1.plot(data["SMA_200"], label='SMA 200', color='red')
+    ax1.plot(data["SMA_Short"], label=f'SMA {short_window}', color='orange')
+    ax1.plot(data["SMA_Long"], label=f'SMA {long_window}', color='red')
     ax1.set_title(f'{ticker} Price Analysis')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
 
     ax2.plot(data['Cumulative_Market'], label='Buy & Hold', color='gray', linestyle='--')
-    ax2.plot(data['Cumulative_Strategy'], label='Golden Cross Strategy', color='green')
-    ax2.set_title(f'{ticker} Strategy Performance (Growth of $1)')
+    ax2.plot(data['Cumulative_Strategy'], label=f'{strategy_name} Strategy', color='green')
+    ax2.set_title(f'{ticker} Performance: Buy & Hold vs. {strategy_name}')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
 
@@ -103,7 +108,8 @@ if __name__ == "__main__":
     while True:
         print("\n--- STOCK TOOL MENU ---")
         print("1. Analyze a Stock (Standard 50/200 Cross)")
-        print("2. Optimize a Stock (Find Best Parameters)")
+        print("2. Analyze (Custom Parameters)")  # <--- NEW OPTION
+        print("3. Optimize a Stock (Find Best Parameters)")
         print("Q. Quit")
         
         choice = input("Select an option: ").upper().strip()
@@ -112,10 +118,17 @@ if __name__ == "__main__":
             ticker = input("Enter ticker: ")
             analyze_stock(ticker)
         elif choice == '2':
-            ticker = input("Enter ticker: ")
-            optimize_strategy(ticker)
+            ticker = input("Ticker: ")
+            # Use 'int()' to convert string input to integer
+            s_window = int(input("Short Window (e.g., 20): "))
+            l_window = int(input("Long Window (e.g., 140): "))
+            analyze_stock(ticker, s_window, l_window)
+            
+        elif choice == '3':
+            optimize_strategy(input("Ticker: "))
         elif choice == 'Q':
             print("Exiting...")
             break
         else:
             print("Invalid option.")
+        
