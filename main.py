@@ -1,5 +1,5 @@
 from stock_data import StockData
-from strategy import GoldenCrossBacktester 
+from strategy import SMABacktester 
 
 def main():
     while True:
@@ -24,7 +24,7 @@ def main():
 
         # 3. Instantiate the Backtester Object with the data
         # Note: stock.data accesses the dataframe inside the object
-        backtester = GoldenCrossBacktester(ticker, stock.data)
+        backtester = SMABacktester(ticker, stock.data)
 
         if choice == '1':
             # Ask for custom params or default

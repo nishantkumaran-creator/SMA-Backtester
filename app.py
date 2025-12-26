@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 from stock_data import StockData
-from strategy import GoldenCrossBacktester
+from strategy import SMABacktester
 
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Quant Backtester", layout="wide")
-st.title("📈 Algorithmic Trading Backtester")
+st.set_page_config(page_title="SMA Backtester", layout="wide")
+st.title("SMA Backtester")
 
 # --- SIDEBAR: USER INPUTS ---
 st.sidebar.header("Configuration")
@@ -28,7 +28,7 @@ if st.sidebar.button("Run Backtest"):
 
     if success:
         # Initialize Backtester
-        backtester = GoldenCrossBacktester(ticker, stock.data)
+        backtester = SMABacktester(ticker, stock.data)
         
         # Run Strategy
         backtester.run_backtest(short_window, long_window)

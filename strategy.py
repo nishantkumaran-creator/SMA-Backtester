@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-class GoldenCrossBacktester:
+class SMABacktester:
     def __init__(self, ticker, stock_data):
         self.ticker = ticker
         # We make a copy so we don't mess up the original data if we run multiple tests
