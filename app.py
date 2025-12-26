@@ -36,7 +36,6 @@ if st.sidebar.button("Get/Refresh Data"):
             # SAVE TO MEMORY (Critical Step)
             st.session_state.stock_data = stock.data
             st.session_state.ticker = ticker_input
-            st.success("Data Loaded!")
         else:
             st.error("Failed to download data.")
 # --- MAIN LOGIC ---
@@ -52,7 +51,6 @@ if st.session_state.stock_data is not None:
     backtester.run_backtest(short_window, long_window)
     
     # --- DISPLAY METRICS ---
-    st.header("1. Strategy Performance")
     strat_sharpe, strat_dd, market_sharpe, market_dd = backtester.calculate_risk_metrics()
     
     col1, col2, col3, col4 = st.columns(4)
